@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tic-Tac-Toe Multiplayer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Tic-Tac-Toe</h1>
+  <div id="status">Waiting for players...</div>
+
+  <div class="board"></div>
+
+  <div class="scoreboard">
+    <p>Player X: <span id="score-x">0</span></p>
+    <p>Player O: <span id="score-o">0</span></p>
+  </div>
+
+  <button id="restart" style="display:none;">Restart Game</button>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="client.js"></script>
+</body>
+</html>
