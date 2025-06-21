@@ -24,6 +24,7 @@ for (let i = 0; i < 9; i++) {
   cell.classList.add('cell');
   cell.dataset.index = i;
   cell.addEventListener('click', () => {
+      // This code runs ONLY when this cell is clicked
     if (!myTurn || cell.textContent) return;
     socket.emit('move', { index: i, symbol: playerSymbol });
   });
@@ -37,7 +38,11 @@ socket.on('player-assigned', (symbol) => {
   statusDiv.textContent = `You are Player ${symbol}`;
 });
 
-
+socket.on('full', () => {
+  // Handle the "room is full" case here
+  alert("The game room is full. Try again later.");
+  // Or update the UI accordingly
+});
 
 socket.on('start-game', (turn) => {
   if (!playerSymbol) {
