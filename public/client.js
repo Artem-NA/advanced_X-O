@@ -19,7 +19,7 @@ function renderBoard(board) {
   });
 }
 
-for (let i = 0; i < 9; i++) {
+for (let i = 0; i < 16; i++) {
   const cell = document.createElement('div');
   cell.classList.add('cell');
   cell.dataset.index = i;
@@ -89,8 +89,8 @@ socket.on('score-update', (scores) => {
 });
 
 socket.on('reset', () => {
-  renderBoard(Array(9).fill(null));
-  statusDiv.textContent = 'Player left. Waiting for opponent...';
+  renderBoard(Array(16).fill(null));
+  statusDiv.textContent = 'Player left. Refresh game';
   myTurn = false;
   restartBtn.style.display = 'none'; // hide restart if player leaves
 });

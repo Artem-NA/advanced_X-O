@@ -2,21 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Tic-Tac-Toe Multiplayer</title>
+  <title>ART X-O Multiplayer</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Tic-Tac-Toe</h1>
+  <h1>Art X-O Multiplayer</h1>
+    <div class="scoreboard">
+    <p>Player X: <span id="score-x">0</span></p>
+    <p>Player O: <span id="score-o">0</span></p>
+  </div>
   <div id="status">Waiting for players...</div>
 
   <div class="board"></div>
 
-  <div class="scoreboard">
-    <p>Player X: <span id="score-x">0</span></p>
-    <p>Player O: <span id="score-o">0</span></p>
-  </div>
-
-  <button id="restart" style="display:none;">Restart Game</button>
+  <div id="powerups"></div>
+  <div id="count_overrides"> left x1</div>
+  <button id="override">override cell</button>
+  <div id="count_blind"> left x1</div>
+  <button id="blind">blind cell</button>
+  
+  <button id="restart" style="display:none;">Next Round</button>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="client.js"></script>

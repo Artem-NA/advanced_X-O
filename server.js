@@ -7,26 +7,33 @@ app.use(express.static('public'));
 // players is empty object (like dictionary)
 // keys - values
 let players = {};
-let board = Array(9).fill(null);
+let board = Array(16).fill(null);
 let currentTurn = 'X';
 let scores = { X: 0, O: 0 };
 /*
-0   1   2
-3   4   5   
-6   7   8   
+0 1 2  3
+4 5  6  7 
+8  9  10 11
+12 13 14 15
 */
 
 //checking who won the game
 function checkWinner(board) {
   //options to win the game with same symbol
   const lines = [
-    [0,1,2],[3,4,5],[6,7,8], // rows
-    [0,3,6],[1,4,7],[2,5,8], // columns
-    [0,4,8],[2,4,6]          // diagonals
-  ];
-  //check for the options
-  for (const [a, b, c] of lines) {
-    if (board[a] && board[a] === board[b] && board[b] === board[c]) {
+  // Rows
+  [0,1,2,3], [4,5,6,7], [8,9,10,11], [12,13,14,15],
+
+  // Columns
+  [0,4,8,12], [1,5,9,13], [2,6,10,14], [3,7,11,15],
+
+  // Diagonals
+  [0,5,10,15], [3,6,9,12]
+];
+
+    // Check for a options on 4x4 board
+  for (const [a, b, c, d] of lines) {
+    if (board[a] && board[a] === board[b] && board[b] === board[c] && board[c] === board[d]) {
       return board[a]; // 'X' or 'O'
     }
   }
@@ -36,27 +43,39 @@ function checkWinner(board) {
 //When a user connects, run this function
 io.on('connection', (socket) => {
 
-  /*
-    The socket is a unique object for that user
-    It represents the connection between server and client
-    It has its own id
-  */
+  
+    //The socket is a unique object for that user
+   // It represents the connection between server and client
+   // It has its own id
+  
   console.log('A user connected:', socket.id);
+  
+  // object of sockets ids
+  const keys = Object.keys(players);
+  if (keys.length < 2) {
+    // no players
+    let symbol = keys.length === 0 ? 'X' : 'O';
+    // player disconnects with O as symbol
+    if (keys.length === 1) {
+      const firstPlayerId = keys[0];
+      const takenSymbol = players[firstPlayerId];
+      symbol = takenSymbol === 'X' ? 'O' : 'X';
 
-
-  if (Object.keys(players).length < 2) {
-    const symbol = Object.keys(players).length === 0 ? 'X' : 'O';
+    }
     players[socket.id] = symbol;
     socket.emit('player-assigned', symbol);
     io.emit('score-update', scores);
 
-    if (Object.keys(players).length === 2) {
+    // Refresh keys AFTER updating players
+    const updatedKeys = Object.keys(players);
+    if (updatedKeys.length === 2) {
       io.emit('start-game', currentTurn);
     }
   } else {
     socket.emit('full');
     return;
   }
+  
 
   socket.on('move', ({ index, symbol }) => {
     if (symbol !== currentTurn || board[index] || Object.keys(players).length < 2) return;
@@ -79,7 +98,7 @@ io.on('connection', (socket) => {
   });
 
 socket.on('restart', () => {
-  board = Array(9).fill(null);
+  board = Array(16).fill(null);
   currentTurn = Math.random() < 0.5 ? 'X' : 'O';
   io.emit('restart-done', { board, turn: currentTurn });
   io.emit('score-update', scores);
@@ -90,10 +109,12 @@ socket.on('restart', () => {
 
   socket.on('disconnect', () => {
     delete players[socket.id];
-    board = Array(9).fill(null);
+    console.log(`player ${socket.id} disconnected`)
+    board = Array(16).fill(null);
     currentTurn = 'X';
     scores = { X: 0, O: 0 };
     io.emit('reset');
+    
   });
 });
 
