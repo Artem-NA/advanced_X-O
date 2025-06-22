@@ -97,9 +97,34 @@ io.on('connection', (socket) => {
     }
   });
 
+
+
+  socket.on('flip', ({ index, symbol }) => {
+  if (board[index] && board[index] !== symbol) {
+    board[index] = symbol;
+
+    const winner = checkWinner(board);
+
+    if (winner === 'X' || winner === 'O') {
+      scores[winner]++;
+      io.emit('update-board', { board });
+      io.emit('game-over', { winner });
+    } else if (winner === 'draw') {
+      io.emit('update-board', { board });
+      io.emit('game-over', { winner: 'draw' });
+    } else {
+      currentTurn = currentTurn === 'X' ? 'O' : 'X';
+      io.emit('update-board', { board });
+      io.emit('next-turn', currentTurn);
+    }
+  }
+});
+
+
 socket.on('restart', () => {
   board = Array(16).fill(null);
   currentTurn = Math.random() < 0.5 ? 'X' : 'O';
+  flipCount = 0;
   io.emit('restart-done', { board, turn: currentTurn });
   io.emit('score-update', scores);
 });
